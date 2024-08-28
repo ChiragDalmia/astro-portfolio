@@ -1,23 +1,54 @@
 ---
+import { getSiteInfo } from "../utils/siteInfo";
+
 interface Props {
-  title: string;
+  title?: string;
+  description?: string;
+  image?: string;
 }
 
-const { title } = Astro.props;
+const { title, description, image } = Astro.props;
+const siteInfo = getSiteInfo();
+
+const metaTitle = title ? `${title} | ${siteInfo.siteName}` : siteInfo.siteName;
+const metaDescription = description || siteInfo.defaultDescription;
+const metaImage = new URL(image || siteInfo.defaultImage, Astro.site);
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Astro description" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
+
+    <title>{metaTitle}</title>
+    <meta name="description" content={metaDescription} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={metaTitle} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:image" content={metaImage} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={metaTitle} />
+    <meta property="twitter:description" content={metaDescription} />
+    <meta property="twitter:image" content={metaImage} />
+
+    <!-- Additional meta tags -->
+    <meta name="author" content={siteInfo.author} />
+    <link rel="canonical" href={Astro.url} />
   </head>
   <body>
     <slot />
   </body>
 </html>
-<style is:global></style>
+
+<style is:global>
+  /* Your global styles here */
+</style>
